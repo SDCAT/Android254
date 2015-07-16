@@ -1,8 +1,10 @@
 package org.twbbs.sdcat.practice;
 
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 //import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +24,21 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         //先繪出畫面後(setContentView)，才能從目前的畫面中取得物件實体。
         editText = (EditText) findViewById(R.id.editText);
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+                    submit(v);
+                    return true;
+                }
+                return false;
+                //keyCode問題 : sdk無法支援所有輸入法及字元、控制字元可能也不同
+            }
+        });
         //editText.setText("Enter New Text Here.");
         hideCheckBox= (CheckBox) findViewById(R.id.checkBox);
+        // R -> 代表所有resource裡的物件
+        //id -> Layout 或 menu 裡定義的id
     }
 
     //onClick需為public , Arg需有View
