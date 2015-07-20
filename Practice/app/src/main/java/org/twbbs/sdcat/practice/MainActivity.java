@@ -1,7 +1,10 @@
 package org.twbbs.sdcat.practice;
 
+import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -92,6 +95,12 @@ public class MainActivity extends ActionBarActivity {
         loadHistory();
         //TextView textView = (TextView) findViewById(R.id.textView);
         //textView.setText(Utils.readFile(this, "history.txt"));
+    }
+
+    public void goToMenuActivity(View view){
+        Intent intent = new Intent();
+        intent.setClass(this, MenuActivity.class);
+        startActivity(intent);
     }
 
     private void loadHistory(){
