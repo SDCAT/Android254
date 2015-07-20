@@ -10,17 +10,23 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
 
     private EditText editText;
     private CheckBox hideCheckBox;
+    private ListView listView;
+
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
 
@@ -31,6 +37,8 @@ public class MainActivity extends ActionBarActivity {
 
         sp = getSharedPreferences("settings", Context.MODE_PRIVATE);
         editor = sp.edit();
+
+        listView = (ListView) findViewById(R.id.listView);
 
         //先繪出畫面後(setContentView)，才能從目前的畫面中取得物件實体。
         editText = (EditText) findViewById(R.id.editText);
@@ -62,7 +70,9 @@ public class MainActivity extends ActionBarActivity {
                 editor.putBoolean("checkbox",isChecked);
             }
         });
-        hideCheckBox.setChecked(sp.getBoolean("checkbox",false));
+        hideCheckBox.setChecked(sp.getBoolean("checkbox", false));
+
+        loadHistory();
     }
 
     //onClick需為public , Arg需有View
@@ -79,8 +89,17 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
         editText.setText("");
 
-        TextView textView = (TextView) findViewById(R.id.textView);
-        textView.setText(Utils.readFile(this,"history.txt"));
+        loadHistory();
+        //TextView textView = (TextView) findViewById(R.id.textView);
+        //textView.setText(Utils.readFile(this, "history.txt"));
+    }
+
+    private void loadHistory(){
+        String history = Utils.readFile(this,"history.txt");
+        String[] data = history.split("\n");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
+        listView.setAdapter(adapter);
     }
 
     @Override
