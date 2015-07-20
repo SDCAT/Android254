@@ -1,6 +1,8 @@
 package org.twbbs.sdcat.practice;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 //import android.util.Log;
@@ -9,7 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -17,17 +21,27 @@ public class MainActivity extends ActionBarActivity {
 
     private EditText editText;
     private CheckBox hideCheckBox;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor editor;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        sp = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        editor = sp.edit();
+
         //先繪出畫面後(setContentView)，才能從目前的畫面中取得物件實体。
         editText = (EditText) findViewById(R.id.editText);
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+                String text = editText.getText().toString();
+                editor.putString("text", text);
+                editor.commit();
+
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                     submit(v);
                     return true;
                 }
@@ -35,10 +49,20 @@ public class MainActivity extends ActionBarActivity {
                 //keyCode問題 : sdk無法支援所有輸入法及字元、控制字元可能也不同
             }
         });
+
+        editText.setText(sp.getString("text",""));
+
         //editText.setText("Enter New Text Here.");
         hideCheckBox= (CheckBox) findViewById(R.id.checkBox);
         // R -> 代表所有resource裡的物件
         //id -> Layout 或 menu 裡定義的id
+        hideCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean("checkbox",isChecked);
+            }
+        });
+        hideCheckBox.setChecked(sp.getBoolean("checkbox",false));
     }
 
     //onClick需為public , Arg需有View
@@ -50,8 +74,13 @@ public class MainActivity extends ActionBarActivity {
         if(hideCheckBox.isChecked()) {
             text = "********";
         }
+        Utils.writeFile(this, text + "\n", "history.txt");
+
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
         editText.setText("");
+
+        TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setText(Utils.readFile(this,"history.txt"));
     }
 
     @Override
