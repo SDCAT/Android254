@@ -26,6 +26,7 @@ import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
+    private static final int REQUEST_CODE_MENU_ACTIVITY = 1;
     private EditText editText;
     private CheckBox hideCheckBox;
     private ListView listView;
@@ -100,7 +101,9 @@ public class MainActivity extends ActionBarActivity {
     public void goToMenuActivity(View view){
         Intent intent = new Intent();
         intent.setClass(this, MenuActivity.class);
-        startActivity(intent);
+        //startActivity(intent);
+        //REQUEST CODE : 認證/識別值是從那一個Activity傳回, 常數自行定義
+        startActivityForResult(intent, REQUEST_CODE_MENU_ACTIVITY );
     }
 
     private void loadHistory(){
@@ -109,6 +112,25 @@ public class MainActivity extends ActionBarActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
         listView.setAdapter(adapter);
+    }
+
+    //右毽, Generate..., 可選Override Methods
+    //這邊先找 onActivityResult, 好取得Activity回傳資料
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case REQUEST_CODE_MENU_ACTIVITY: {
+                if(resultCode == RESULT_OK) {
+                    //TODO
+                    String menuResult = data.getStringExtra("result");
+                    Toast.makeText(this, menuResult, Toast.LENGTH_LONG).show();
+                }
+            }
+                break;
+            default:
+                break;
+        }
+
     }
 
     @Override
