@@ -3,10 +3,19 @@ package org.twbbs.sdcat.practice;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.security.auth.login.LoginException;
 
 
 public class MenuActivity extends ActionBarActivity {
@@ -24,7 +33,34 @@ public class MenuActivity extends ActionBarActivity {
     }
 
     private String getResult() {
-        return "";
+        LinearLayout root = (LinearLayout) findViewById(R.id.root);
+        int count = root.getChildCount();
+        JSONArray jArray = new JSONArray();
+        for(int i = 0; i < count - 1 ; i++) {
+            LinearLayout drinkStatus = (LinearLayout) root.getChildAt(i);
+
+            String drinkName = ((TextView)drinkStatus.getChildAt(0)).getText().toString();
+            String l = ((Button)drinkStatus.getChildAt(1)).getText().toString();
+            String m = ((Button)drinkStatus.getChildAt(2)).getText().toString();
+            String s = ((Button)drinkStatus.getChildAt(3)).getText().toString();
+
+
+            try{
+                JSONObject jObj = new JSONObject();
+                //String tmp = "{\"name\":" + drinkName + ",\"l\":" + l + ",\"m\":" + m + ",\"s\":" + s + "}";
+                jObj.put("name",drinkName);
+                jObj.put("l",Integer.valueOf(l));
+                jObj.put("m",Integer.valueOf(m));
+                jObj.put("s",Integer.valueOf(s));
+
+                jArray.put(jObj);
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        Log.d("debug", jArray.toString());
+        return jArray.toString();
     }
 
     public void done(View view) {
