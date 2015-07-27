@@ -179,7 +179,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void loadStoreInfo() {
-        String[] data = new String[]{"中山店", "中正店"};
+        //String[] data = new String[]{"中山店", "中正店"};
+        String[] data = getResources().getStringArray(R.array.store_info);
+
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, data);
         spinner.setAdapter(adapter);

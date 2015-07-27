@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="store_info">
+        <item>士林文林 ◎ 台北市士林區文林路28號</item>
+        <item>大南 ◎ 台北市士林區大南路309號</item>
+        <item>士林中正 ◎ 台北市士林區中正路342號</item>
+        <item>美崙 ◎ 台北市士林區美崙街5號</item>
+        <item>文化 ◎ 台北市士林區光華路26巷4-2號</item>
+        <item>華齡 ◎ 台北市士林區華齡街16號</item>
+        <item>天母德行 ◎ 台北市士林區德行東路107號</item>
+        <item>社子 ◎ 台北市士林區延平北路六段91號</item>
+    </string-array>
+</resources>
