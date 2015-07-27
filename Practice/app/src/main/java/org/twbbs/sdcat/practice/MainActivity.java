@@ -19,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
     private EditText editText;
     private CheckBox hideCheckBox;
     private ListView listView;
+    private Spinner spinner;
 
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
@@ -53,7 +55,8 @@ public class MainActivity extends ActionBarActivity {
 
         listView = (ListView) findViewById(R.id.listView);
 
-        //¥ıÃ¸¥Xµe­±«á(setContentView)¡A¤~¯à±q¥Ø«eªºµe­±¤¤¨ú±oª«¥ó¹êÊ^¡C
+        //å…ˆç¹ªå‡ºç•«é¢å¾Œ(setContentView)ï¼Œæ‰èƒ½å¾ç›®å‰çš„ç•«é¢ä¸­å–å¾—ç‰©ä»¶å¯¦ä½“ã€‚
+        spinner = (Spinner) findViewById(R.id.store_name);
         editText = (EditText) findViewById(R.id.editText);
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -67,7 +70,7 @@ public class MainActivity extends ActionBarActivity {
                     return true;
                 }
                 return false;
-                //keyCode°İÃD : sdkµLªk¤ä´©©Ò¦³¿é¤Jªk¤Î¦r¤¸¡B±±¨î¦r¤¸¥i¯à¤]¤£¦P
+                //keyCodeå•é¡Œ : sdkç„¡æ³•æ”¯æ´æ‰€æœ‰è¼¸å…¥æ³•åŠå­—å…ƒã€æ§åˆ¶å­—å…ƒå¯èƒ½ä¹Ÿä¸åŒ
             }
         });
 
@@ -75,8 +78,8 @@ public class MainActivity extends ActionBarActivity {
 
         //editText.setText("Enter New Text Here.");
         hideCheckBox= (CheckBox) findViewById(R.id.checkBox);
-        // R -> ¥Nªí©Ò¦³resource¸Ìªºª«¥ó
-        //id -> Layout ©Î menu ¸Ì©w¸qªºid
+        // R -> ä»£è¡¨æ‰€æœ‰resourceè£¡çš„ç‰©ä»¶
+        //id -> Layout æˆ– menu è£¡å®šç¾©çš„id
         hideCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -86,13 +89,14 @@ public class MainActivity extends ActionBarActivity {
         hideCheckBox.setChecked(sp.getBoolean("checkbox", false));
 
         loadHistory();
+        loadStoreInfo();
     }
 
-    //onClick»İ¬°public , Arg»İ¦³View
+    //onClickéœ€ç‚ºpublic , Argéœ€æœ‰View
     public void submit(View view){
         String text= editText.getText().toString();
         //Log.d("debug", "edittext: " + text);
-        //duration : ¤@­Ó±`¼Æ, ³]©w¤£¦PªºÅã¥Ü®É¶¡ 0 SHORT, 1 LONG
+        //duration : ä¸€å€‹å¸¸æ•¸, è¨­å®šä¸åŒçš„é¡¯ç¤ºæ™‚é–“ 0 SHORT, 1 LONG
 
         if(hideCheckBox.isChecked()) {
             text = "********";
@@ -130,7 +134,7 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent();
         intent.setClass(this, MenuActivity.class);
         //startActivity(intent);
-        //REQUEST CODE : »{ÃÒ/ÃÑ§O­È¬O±q¨º¤@­ÓActivity¶Ç¦^, ±`¼Æ¦Û¦æ©w¸q
+        //REQUEST CODE : èªè­‰/è­˜åˆ¥å€¼æ˜¯å¾é‚£ä¸€å€‹Activityå‚³å›, å¸¸æ•¸è‡ªè¡Œå®šç¾©
         startActivityForResult(intent, REQUEST_CODE_MENU_ACTIVITY );
     }
 
@@ -161,7 +165,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
 
-        //formªºkey¨Ì§Ç¹ïÀ³¨ìtoªºid, °}¦C¼Æ¶q·|¬Ûµ¥
+        //formçš„keyä¾åºå°æ‡‰åˆ°toçš„id, é™£åˆ—æ•¸é‡æœƒç›¸ç­‰
         String[] from = new String[]{"note", "sum", "address"};
         int[] to = new int[]{R.id.listview_item_note, R.id.listview_item_sum,
                 R.id.listview_item_address};
@@ -174,8 +178,15 @@ public class MainActivity extends ActionBarActivity {
         return "77";
     }
 
-    //¥k··, Generate..., ¥i¿ïOverride Methods
-    //³oÃä¥ı§ä onActivityResult, ¦n¨ú±oActivity¦^¶Ç¸ê®Æ
+    private void loadStoreInfo() {
+        String[] data = new String[]{"ä¸­å±±åº—", "ä¸­æ­£åº—"};
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, data);
+        spinner.setAdapter(adapter);
+    }
+
+    //å³æ¯½, Generate..., å¯é¸Override Methods
+    //é€™é‚Šå…ˆæ‰¾ onActivityResult, å¥½å–å¾—Activityå›å‚³è³‡æ–™
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
