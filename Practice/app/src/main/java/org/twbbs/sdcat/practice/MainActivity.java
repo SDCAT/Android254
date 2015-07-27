@@ -120,7 +120,13 @@ public class MainActivity extends ActionBarActivity {
                 JSONArray menuResultArray = new JSONArray(menuResult);
                 order.put("note", text);
                 order.put("menu", menuResultArray);
-                order.put("address",storeInfo);
+                order.put("address", storeInfo);
+
+                ParseObject orderObject = new ParseObject("Order");
+                orderObject.put("note", text);
+                orderObject.put("menu", menuResultArray);
+                orderObject.put("address", storeInfo);
+                orderObject.saveInBackground();
 
                 Utils.writeFile(this, order.toString() + "\n", "history.txt");
                 //Utils.writeFile(this, text + "\n", "history.txt");
