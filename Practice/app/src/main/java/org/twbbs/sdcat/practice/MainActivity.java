@@ -23,6 +23,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.Parse;
+import com.parse.ParseObject;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +52,13 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, "yEbzCH4YgT2LyUAinwI3psNyxw21etL2BCqzZXOy", "oyJa4cS4p239eC1e19JbIG8AI17zSosSxrko2nlH");
+
+        //ParseObject testObject = new ParseObject("TestObject");
+        //testObject.put("foo", "bar");
+        //testObject.saveInBackground();
 
         sp = getSharedPreferences("settings", Context.MODE_PRIVATE);
         editor = sp.edit();
@@ -77,7 +87,7 @@ public class MainActivity extends ActionBarActivity {
         editText.setText(sp.getString("text",""));
 
         //editText.setText("Enter New Text Here.");
-        hideCheckBox= (CheckBox) findViewById(R.id.checkBox);
+        hideCheckBox = (CheckBox) findViewById(R.id.checkBox);
         // R -> 代表所有resource裡的物件
         //id -> Layout 或 menu 裡定義的id
         hideCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -138,7 +148,7 @@ public class MainActivity extends ActionBarActivity {
         intent.setClass(this, MenuActivity.class);
         //startActivity(intent);
         //REQUEST CODE : 認證/識別值是從那一個Activity傳回, 常數自行定義
-        startActivityForResult(intent, REQUEST_CODE_MENU_ACTIVITY );
+        startActivityForResult(intent, REQUEST_CODE_MENU_ACTIVITY);
     }
 
     private void loadHistory(){
