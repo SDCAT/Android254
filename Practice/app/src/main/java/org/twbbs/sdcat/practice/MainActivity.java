@@ -18,10 +18,18 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -33,6 +41,7 @@ public class MainActivity extends ActionBarActivity {
 
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
+    private String menuResult;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +80,7 @@ public class MainActivity extends ActionBarActivity {
         hideCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                editor.putBoolean("checkbox",isChecked);
+                editor.putBoolean("checkbox", isChecked);
             }
         });
         hideCheckBox.setChecked(sp.getBoolean("checkbox", false));
@@ -88,12 +97,31 @@ public class MainActivity extends ActionBarActivity {
         if(hideCheckBox.isChecked()) {
             text = "********";
         }
-        Utils.writeFile(this, text + "\n", "history.txt");
 
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-        editText.setText("");
+        if(menuResult != null) {
+            try {
+                JSONObject order = new JSONObject();
+                JSONArray menuResultArray = new JSONArray(menuResult);
+                order.put("note", text);
+                order.put("menu", menuResultArray);
 
-        loadHistory();
+                Utils.writeFile(this, order.toString() + "\n", "history.txt");
+                //Utils.writeFile(this, text + "\n", "history.txt");
+
+                Toast.makeText(this, order.toString(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+                editText.setText("");
+
+                menuResult = null;
+                loadHistory();
+
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
         //TextView textView = (TextView) findViewById(R.id.textView);
         //textView.setText(Utils.readFile(this, "history.txt"));
     }
@@ -107,11 +135,43 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void loadHistory(){
-        String history = Utils.readFile(this,"history.txt");
-        String[] data = history.split("\n");
+        String history = Utils.readFile(this, "history.txt");
+        //String[] data = history.split("\n");
+        String[] rawData = history.split("\n");
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
+        List<Map<String,String>> data = new ArrayList<>();
+
+        for(String d: rawData)  {
+            try{
+                JSONObject object = new JSONObject(d);
+                String note = object.getString("note");
+                String sum = getDrindSum(object.getJSONArray("menu"));
+                String address = "Taipei City";
+
+                Map<String, String> item = new HashMap<>();
+                item.put("note", note);
+                item.put("sum", sum);
+                item.put("address", address);
+
+                data.add(item);
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        //form的key依序對應到to的id, 陣列數量會相等
+        String[] from = new String[]{"note", "sum", "address"};
+        int[] to = new int[]{R.id.listview_item_note, R.id.listview_item_sum,
+                R.id.listview_item_address};
+
+        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.listview_item, from, to);
         listView.setAdapter(adapter);
+    }
+
+    public String getDrindSum(JSONArray menu) {
+        return "77";
     }
 
     //右毽, Generate..., 可選Override Methods
@@ -122,7 +182,7 @@ public class MainActivity extends ActionBarActivity {
             case REQUEST_CODE_MENU_ACTIVITY: {
                 if(resultCode == RESULT_OK) {
                     //TODO
-                    String menuResult = data.getStringExtra("result");
+                    menuResult = data.getStringExtra("result");
                     Toast.makeText(this, menuResult, Toast.LENGTH_LONG).show();
                 }
             }
