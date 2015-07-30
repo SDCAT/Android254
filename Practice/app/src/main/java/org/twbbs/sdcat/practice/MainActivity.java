@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -69,6 +70,12 @@ public class MainActivity extends ActionBarActivity {
         editor = sp.edit();
 
         listView = (ListView) findViewById(R.id.listView);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                goToOrderDetialActivity(view, position);
+            }
+        });
 
         //先繪出畫面後(setContentView)，才能從目前的畫面中取得物件實体。
         spinner = (Spinner) findViewById(R.id.store_name);
@@ -161,6 +168,12 @@ public class MainActivity extends ActionBarActivity {
         //textView.setText(Utils.readFile(this, "history.txt"));
     }
 
+    public void goToOrderDetialActivity(View view, int position) {
+        Intent intent = new Intent();
+        intent.setClass(this, OrderDetialActivity.class);
+        startActivity(intent);
+    }
+
     public void goToMenuActivity(View view){
         Intent intent = new Intent();
         intent.setClass(this, MenuActivity.class);
@@ -214,9 +227,9 @@ public class MainActivity extends ActionBarActivity {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                if(e == null) {
+                if (e == null) {
                     String[] data = new String[list.size()];
-                    for(int i = 0; i < list.size(); i++) {
+                    for (int i = 0; i < list.size(); i++) {
                         String name = list.get(i).getString("name");
                         String address = list.get(i).getString("address");
                         data[i] = name + " ◎ " + address;
