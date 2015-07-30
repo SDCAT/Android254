@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 //import android.util.Log;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,8 +24,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -126,10 +131,17 @@ public class MainActivity extends ActionBarActivity {
                 orderObject.put("note", text);
                 orderObject.put("menu", menuResultArray);
                 orderObject.put("address", storeInfo);
-                orderObject.saveInBackground();
+                //orderObject.saveInBackground();
+                orderObject.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        Log.d("debfg", "after done()");
+                    }
+                });
+                Log.d("debug", "after SaveInBackground");
 
-                Utils.writeFile(this, order.toString() + "\n", "history.txt");
-                //Utils.writeFile(this, text + "\n", "history.txt");
+//                Utils.writeFile(this, order.toString() + "\n", "history.txt");
+//                //Utils.writeFile(this, text + "\n", "history.txt");
 
                 Toast.makeText(this, order.toString(), Toast.LENGTH_LONG).show();
                 //Toast.makeText(this, text, Toast.LENGTH_LONG).show();
@@ -158,33 +170,31 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void loadHistory(){
-        String history = Utils.readFile(this, "history.txt");
-        //String[] data = history.split("\n");
-        String[] rawData = history.split("\n");
+        final List<Map<String, String>> data = new ArrayList<>();
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Order");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if(e==null){ // e為null表示沒有異常
+                    for(ParseObject object : list) {
+                        String note = object.getString("note");
+                        String sum = getDrindSum(object.getJSONArray("menu"));
+                        String address = object.getString("address");
 
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
-        List<Map<String,String>> data = new ArrayList<>();
+                        Map<String, String> item = new HashMap<>();
+                        item.put("note", note);
+                        item.put("sum", sum);
+                        item.put("address", address);
 
-        for(String d: rawData)  {
-            try{
-                JSONObject object = new JSONObject(d);
-                String note = object.getString("note");
-                String sum = getDrindSum(object.getJSONArray("menu"));
-                //String address = "Taipei City";
-                String address = object.getString("address");
-
-                Map<String, String> item = new HashMap<>();
-                item.put("note", note);
-                item.put("sum", sum);
-                item.put("address", address);
-
-                data.add(item);
-            }catch (JSONException e) {
-                e.printStackTrace();
+                        data.add(item);
+                    }
+                    setDataToListView(data);
+                }
             }
-        }
+        });
+    }
 
-
+    private void setDataToListView(List<Map<String, String>> data) {
         //form的key依序對應到to的id, 陣列數量會相等
         String[] from = new String[]{"note", "sum", "address"};
         int[] to = new int[]{R.id.listview_item_note, R.id.listview_item_sum,
