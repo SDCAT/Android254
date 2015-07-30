@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-//import android.util.Log;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -53,6 +52,7 @@ public class MainActivity extends ActionBarActivity {
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
     private String menuResult;
+    private List<ParseObject> orderQueryReslut;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +61,6 @@ public class MainActivity extends ActionBarActivity {
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "yEbzCH4YgT2LyUAinwI3psNyxw21etL2BCqzZXOy", "oyJa4cS4p239eC1e19JbIG8AI17zSosSxrko2nlH");
-
         //ParseObject testObject = new ParseObject("TestObject");
         //testObject.put("foo", "bar");
         //testObject.saveInBackground();
@@ -168,9 +167,7 @@ public class MainActivity extends ActionBarActivity {
         //textView.setText(Utils.readFile(this, "history.txt"));
     }
 
-    public void goToOrderDetialActivity(View view, int position) {
-        Intent intent = new Intent();
-        intent.setClass(this, OrderDetialActivity.class);
+    private void pushDataToIntent(View view, Intent intent) {
         //透過findViewById取得
         TextView note = (TextView)view.findViewById(R.id.listview_item_note);
         TextView address = (TextView)view.findViewById(R.id.listview_item_address);
@@ -181,6 +178,28 @@ public class MainActivity extends ActionBarActivity {
         intent.putExtra("note", noteStr);
         intent.putExtra("address", addressStr);
         intent.putExtra("sum", sumStr);
+    }
+
+    private void pushDataToIntent(int position, Intent intent) {
+        SimpleAdapter adapter = (SimpleAdapter) listView.getAdapter();
+        Map<String, String> item = (Map<String, String>) adapter.getItem(position);
+        intent.putExtra("note", item.get("note").toString());
+        intent.putExtra("address", item.get("address").toString());
+        intent.putExtra("sum", item.get("sum").toString());
+    }
+
+    private void pushDataToIntent(ParseObject object, Intent intent) {
+        intent.putExtra("note", object.getString("note"));
+        intent.putExtra("address", object.getString("address"));
+        intent.putExtra("sum", getDrindSum(object.getJSONArray("menu")));
+    }
+
+    public void goToOrderDetialActivity(View view, int position) {
+        Intent intent = new Intent();
+        intent.setClass(this, OrderDetialActivity.class);
+        //pushDataToIntent(view, intent);
+        //pushDataToIntent(position, intent);
+        pushDataToIntent(orderQueryReslut.get(position), intent);
 
         startActivity(intent);
     }
@@ -200,6 +219,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) { // e為null表示沒有異常
+                    orderQueryReslut = list;
                     for (ParseObject object : list) {
                         String note = object.getString("note");
                         String sum = getDrindSum(object.getJSONArray("menu"));
