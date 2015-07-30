@@ -175,8 +175,8 @@ public class MainActivity extends ActionBarActivity {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                if(e==null){ // e為null表示沒有異常
-                    for(ParseObject object : list) {
+                if (e == null) { // e為null表示沒有異常
+                    for (ParseObject object : list) {
                         String note = object.getString("note");
                         String sum = getDrindSum(object.getJSONArray("menu"));
                         String address = object.getString("address");
@@ -209,9 +209,30 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void loadStoreInfo() {
-        //String[] data = new String[]{"中山店", "中正店"};
-        String[] data = getResources().getStringArray(R.array.store_info);
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("StoreInfo");
+        query.orderByAscending("name");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if(e == null) {
+                    String[] data = new String[list.size()];
+                    for(int i = 0; i < list.size(); i++) {
+                        String name = list.get(i).getString("name");
+                        String address = list.get(i).getString("address");
+                        data[i] = name + " ◎ " + address;
+                    }
+                    setDataToSpinner(data);
+                }
+            }
+        });
 
+        //String[] data = new String[]{"中山店", "中正店"};
+        //String[] data = getResources().getStringArray(R.array.store_info);
+
+        //setDataToSpinner(data);
+    }
+
+    private void setDataToSpinner(String[] data) {
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, data);
         spinner.setAdapter(adapter);
