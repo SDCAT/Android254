@@ -171,6 +171,17 @@ public class MainActivity extends ActionBarActivity {
     public void goToOrderDetialActivity(View view, int position) {
         Intent intent = new Intent();
         intent.setClass(this, OrderDetialActivity.class);
+        //透過findViewById取得
+        TextView note = (TextView)view.findViewById(R.id.listview_item_note);
+        TextView address = (TextView)view.findViewById(R.id.listview_item_address);
+        TextView sum = (TextView)view.findViewById(R.id.listview_item_sum);
+        String noteStr = note.getText().toString();
+        String addressStr = address.getText().toString();
+        String sumStr = sum.getText().toString();
+        intent.putExtra("note", noteStr);
+        intent.putExtra("address", addressStr);
+        intent.putExtra("sum", sumStr);
+
         startActivity(intent);
     }
 
