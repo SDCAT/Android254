@@ -36,4 +36,17 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="20dp"
         android:layout_marginEnd="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Parse ID"
+        android:id="@+id/listview_item_id"
+        android:layout_marginRight="52dp"
+        android:layout_marginEnd="52dp"
+        android:layout_above="@+id/listview_item_address"
+        android:layout_toLeftOf="@+id/listview_item_sum"
+        android:layout_toStartOf="@+id/listview_item_sum"
+        android:visibility="invisible"/>
 </RelativeLayout>

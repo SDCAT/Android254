@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
@@ -28,6 +30,7 @@ import android.widget.Toast;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
@@ -55,6 +58,7 @@ public class MainActivity extends ActionBarActivity {
     private SharedPreferences.Editor editor;
     private String menuResult;
     private List<ParseObject> orderQueryReslut;
+    private Bitmap bitmap;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,11 +143,18 @@ public class MainActivity extends ActionBarActivity {
                 orderObject.put("note", text);
                 orderObject.put("menu", menuResultArray);
                 orderObject.put("address", storeInfo);
+
+                if(bitmap != null) {
+                    ParseFile file = new ParseFile("photo.png", Utils.bitmapToBytes(bitmap));
+                    orderObject.put("photo", file);
+                }
+
                 //orderObject.saveInBackground();
                 orderObject.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
                         Log.d("debfg", "after done()");
+                        loadHistory();
                     }
                 });
                 Log.d("debug", "after SaveInBackground");
@@ -156,7 +167,7 @@ public class MainActivity extends ActionBarActivity {
                 editText.setText("");
 
                 menuResult = null;
-                loadHistory();
+                //loadHistory();
 
             }
             catch (JSONException e) {
@@ -232,11 +243,13 @@ public class MainActivity extends ActionBarActivity {
                         String note = object.getString("note");
                         String sum = getDrinkSum(object.getJSONArray("menu"));
                         String address = object.getString("address");
+                        String parseId = object.getString("objectId");
 
                         Map<String, String> item = new HashMap<>();
                         item.put("note", note);
                         item.put("sum", sum);
                         item.put("address", address);
+                        item.put("parseid", parseId);
 
                         data.add(item);
                     }
@@ -248,9 +261,9 @@ public class MainActivity extends ActionBarActivity {
 
     private void setDataToListView(List<Map<String, String>> data) {
         //form的key依序對應到to的id, 陣列數量會相等
-        String[] from = new String[]{"note", "sum", "address"};
+        String[] from = new String[]{"note", "sum", "address", "parseid"};
         int[] to = new int[]{R.id.listview_item_note, R.id.listview_item_sum,
-                R.id.listview_item_address};
+                R.id.listview_item_address, R.id.listview_item_id};
 
         SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.listview_item, from, to);
         listView.setAdapter(adapter);
@@ -313,9 +326,16 @@ public class MainActivity extends ActionBarActivity {
         switch (requestCode){
             case REQUEST_CODE_MENU_ACTIVITY: {
                 if(resultCode == RESULT_OK) {
-                    //TODO
                     menuResult = data.getStringExtra("result");
                     Toast.makeText(this, menuResult, Toast.LENGTH_LONG).show();
+                }
+            }
+                break;
+            case REQUEST_CODE_CAMERA: {
+                if(resultCode == RESULT_OK) {
+                    bitmap = data.getParcelableExtra("data");
+                    ImageView imageView = (ImageView)findViewById(R.id.imageView);
+                    imageView.setImageBitmap(bitmap);
                 }
             }
                 break;
