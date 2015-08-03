@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,6 +45,7 @@ import java.util.Map;
 public class MainActivity extends ActionBarActivity {
 
     private static final int REQUEST_CODE_MENU_ACTIVITY = 1;
+    private static final int REQUEST_CODE_CAMERA = 2;
     private EditText editText;
     private CheckBox hideCheckBox;
     private ListView listView;
@@ -191,7 +193,13 @@ public class MainActivity extends ActionBarActivity {
     private void pushDataToIntent(ParseObject object, Intent intent) {
         intent.putExtra("note", object.getString("note"));
         intent.putExtra("address", object.getString("address"));
-        intent.putExtra("sum", getDrindSum(object.getJSONArray("menu")));
+        intent.putExtra("sum", getDrinkSum(object.getJSONArray("menu")));
+    }
+
+    private void goToCamera() {
+        Intent intent = new Intent();
+        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, REQUEST_CODE_CAMERA);
     }
 
     public void goToOrderDetialActivity(View view, int position) {
@@ -222,7 +230,7 @@ public class MainActivity extends ActionBarActivity {
                     orderQueryReslut = list;
                     for (ParseObject object : list) {
                         String note = object.getString("note");
-                        String sum = getDrindSum(object.getJSONArray("menu"));
+                        String sum = getDrinkSum(object.getJSONArray("menu"));
                         String address = object.getString("address");
 
                         Map<String, String> item = new HashMap<>();
@@ -248,8 +256,24 @@ public class MainActivity extends ActionBarActivity {
         listView.setAdapter(adapter);
     }
 
-    public String getDrindSum(JSONArray menu) {
-        return "77";
+    public String getDrinkSum(JSONArray menu) {
+        int count = menu.length();
+        int drinksum = 0;
+        for(int i = 0; i < count; i ++) {
+            try {
+                JSONObject drink = menu.getJSONObject(i);
+                int l = drink.getInt("l");
+                int m = drink.getInt("m");
+                int s = drink.getInt("s");
+                drinksum = drinksum + l + m + s;
+            }
+            catch (JSONException e) {
+                e.printStackTrace();;
+            }
+
+        }
+        return String.valueOf(drinksum);
+        //return "77";
     }
 
     private void loadStoreInfo() {
@@ -318,6 +342,8 @@ public class MainActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_take_photo) {
+            goToCamera();
         }
 
         return super.onOptionsItemSelected(item);
