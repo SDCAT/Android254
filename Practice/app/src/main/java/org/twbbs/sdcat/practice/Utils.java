@@ -2,12 +2,18 @@ package org.twbbs.sdcat.practice;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by chunwei on 2015/7/20.
@@ -46,4 +52,15 @@ public class Utils {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         return  baos.toByteArray();
     }
+
+    public static Uri getOutputUri() {
+        File dir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        if(dir.exists() == false) {
+            dir.mkdirs();
+        }
+        File file = new File(dir, "photo.png");
+        return Uri.fromFile(file);
+    }
+
 }

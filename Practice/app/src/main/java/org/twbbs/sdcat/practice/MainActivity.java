@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -215,6 +217,7 @@ public class MainActivity extends ActionBarActivity {
     private void goToCamera() {
         Intent intent = new Intent();
         intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Utils.getOutputUri());
         startActivityForResult(intent, REQUEST_CODE_CAMERA);
     }
 
@@ -338,9 +341,17 @@ public class MainActivity extends ActionBarActivity {
                 break;
             case REQUEST_CODE_CAMERA: {
                 if(resultCode == RESULT_OK) {
-                    bitmap = data.getParcelableExtra("data");
+                    //bitmap = data.getParcelableExtra("data");
+                    Uri uri = Utils.getOutputUri();
                     ImageView imageView = (ImageView)findViewById(R.id.imageView);
-                    imageView.setImageBitmap(bitmap);
+                    //imageView.setImageBitmap(bitmap);
+                    imageView.setImageURI(uri);
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
                 break;
