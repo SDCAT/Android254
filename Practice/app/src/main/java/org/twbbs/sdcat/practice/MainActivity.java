@@ -185,12 +185,15 @@ public class MainActivity extends ActionBarActivity {
         TextView note = (TextView)view.findViewById(R.id.listview_item_note);
         TextView address = (TextView)view.findViewById(R.id.listview_item_address);
         TextView sum = (TextView)view.findViewById(R.id.listview_item_sum);
+        TextView pid = (TextView)view.findViewById(R.id.listview_item_id);
         String noteStr = note.getText().toString();
         String addressStr = address.getText().toString();
         String sumStr = sum.getText().toString();
+        String pidStr = pid.getText().toString();
         intent.putExtra("note", noteStr);
         intent.putExtra("address", addressStr);
         intent.putExtra("sum", sumStr);
+        intent.putExtra("pid", pidStr);
     }
 
     private void pushDataToIntent(int position, Intent intent) {
@@ -199,12 +202,14 @@ public class MainActivity extends ActionBarActivity {
         intent.putExtra("note", item.get("note").toString());
         intent.putExtra("address", item.get("address").toString());
         intent.putExtra("sum", item.get("sum").toString());
+        intent.putExtra("pid", item.get("pid").toString());
     }
 
     private void pushDataToIntent(ParseObject object, Intent intent) {
         intent.putExtra("note", object.getString("note"));
         intent.putExtra("address", object.getString("address"));
         intent.putExtra("sum", getDrinkSum(object.getJSONArray("menu")));
+        intent.putExtra("pid", object.getObjectId());
     }
 
     private void goToCamera() {
@@ -243,13 +248,13 @@ public class MainActivity extends ActionBarActivity {
                         String note = object.getString("note");
                         String sum = getDrinkSum(object.getJSONArray("menu"));
                         String address = object.getString("address");
-                        String parseId = object.getString("objectId");
+                        String parseId = object.getObjectId();
 
                         Map<String, String> item = new HashMap<>();
                         item.put("note", note);
                         item.put("sum", sum);
                         item.put("address", address);
-                        item.put("parseid", parseId);
+                        item.put("pid", parseId);
 
                         data.add(item);
                     }
@@ -261,7 +266,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void setDataToListView(List<Map<String, String>> data) {
         //form的key依序對應到to的id, 陣列數量會相等
-        String[] from = new String[]{"note", "sum", "address", "parseid"};
+        String[] from = new String[]{"note", "sum", "address", "pid"};
         int[] to = new int[]{R.id.listview_item_note, R.id.listview_item_sum,
                 R.id.listview_item_address, R.id.listview_item_id};
 

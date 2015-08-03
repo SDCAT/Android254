@@ -19,8 +19,9 @@ public class OrderDetialActivity extends ActionBarActivity {
         String note = intent.getStringExtra("note");
         String address = intent.getStringExtra("address");
         String sum = intent.getStringExtra("sum");
+        String parseid = intent.getStringExtra("pid");
 
-        Toast.makeText(this, note + "," + address + "," + sum, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, note + "," + address + "," + sum + "," + parseid, Toast.LENGTH_LONG).show();
     }
 
     @Override
