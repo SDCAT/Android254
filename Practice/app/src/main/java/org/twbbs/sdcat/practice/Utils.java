@@ -92,6 +92,11 @@ public class Utils {
     }
 
     public static String fetchUrl(String urlStr) {
+        return new String(fetchUrlToByte(urlStr));
+
+    }
+
+    public static byte[] fetchUrlToByte(String urlStr) {
         try {
             URL url = new URL(urlStr);
             URLConnection urlConnection = url.openConnection();
@@ -104,7 +109,7 @@ public class Utils {
             while( (len = is.read(buffer) ) != -1 ) {
                 baos.write(buffer);
             }
-            return new String(baos.toByteArray());
+            return baos.toByteArray();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -112,6 +117,10 @@ public class Utils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static Bitmap byteToBitmap(byte[] data) {
+        return BitmapFactory.decodeByteArray(data, 0, data.length);
     }
 
     final static String GEO_URL = "https://maps.googleapis.com/maps/api/geocode/json?address=";
@@ -125,11 +134,11 @@ public class Utils {
     }
 
     final static String STATIC_MAP_URL =
-            "http://maps.googleapis.com/maps/api/staticmap?center=%s&zoom=17&scale=1&size=300x300&maptype=roadmap&format=png&visual_refresh=true";
+            "http://maps.googleapis.com/maps/api/staticmap?center=[add]&zoom=16&scale=1&size=300x300&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:L%7C[add]";
     public static String getStaticMapUrl(String address) {
         try {
             String center = URLEncoder.encode(address, "utf-8");
-            return String.format(STATIC_MAP_URL, center);
+            return STATIC_MAP_URL.replace("[add]", center);
         }catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
