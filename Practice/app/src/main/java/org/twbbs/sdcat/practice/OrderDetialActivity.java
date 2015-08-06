@@ -3,6 +3,7 @@ package org.twbbs.sdcat.practice;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -17,11 +18,22 @@ public class OrderDetialActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         String note = intent.getStringExtra("note");
-        String address = intent.getStringExtra("address");
+        String address = intent.getStringExtra("address").split(" ◎ ")[1];
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String url = "https://maps.googleapis.com/maps/api/geocode/json?address=taipei101";
+                String result = Utils.fetchUrl(url);
+                Log.d("debug", result);
+            }
+        }).start();
+
+
         String sum = intent.getStringExtra("sum");
         String parseid = intent.getStringExtra("pid");
 
-        Toast.makeText(this, note + "," + address + "," + sum + "," + parseid, Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, note + "," + address + "," + sum + "," + parseid + "," + result, Toast.LENGTH_LONG).show();
     }
 
     @Override
