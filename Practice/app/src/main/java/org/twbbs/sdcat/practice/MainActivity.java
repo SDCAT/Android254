@@ -62,6 +62,8 @@ public class MainActivity extends ActionBarActivity {
     private List<ParseObject> orderQueryReslut;
     private Bitmap bitmap;
 
+    private boolean hasPhoto = false;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -146,8 +148,13 @@ public class MainActivity extends ActionBarActivity {
                 orderObject.put("menu", menuResultArray);
                 orderObject.put("address", storeInfo);
 
-                if(bitmap != null) {
-                    ParseFile file = new ParseFile("photo.png", Utils.bitmapToBytes(bitmap));
+                //if(bitmap != null) {
+                //    ParseFile file = new ParseFile("photo.png", Utils.bitmapToBytes(bitmap));
+                //    orderObject.put("photo", file);
+                //}
+                if(hasPhoto) {
+                    Uri uri = Utils.getOutputUri();
+                    ParseFile file = new ParseFile("photo.png", Utils.uriToBytes(this,uri));
                     orderObject.put("photo", file);
                 }
 
@@ -169,6 +176,7 @@ public class MainActivity extends ActionBarActivity {
                 editText.setText("");
 
                 menuResult = null;
+                hasPhoto = false;
                 //loadHistory();
 
             }
@@ -346,13 +354,17 @@ public class MainActivity extends ActionBarActivity {
                     ImageView imageView = (ImageView)findViewById(R.id.imageView);
                     //imageView.setImageBitmap(bitmap);
                     imageView.setImageURI(uri);
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    hasPhoto = true;
+                    //try {
+                    //    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                    //}
+                    //catch (IOException e) {
+                    //    e.printStackTrace();
+                    //}
+                } else {
+                    hasPhoto = false;
                 }
+
             }
                 break;
             default:

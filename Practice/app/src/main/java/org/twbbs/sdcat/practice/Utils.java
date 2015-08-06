@@ -53,6 +53,27 @@ public class Utils {
         return  baos.toByteArray();
     }
 
+    public static byte[] uriToBytes(Context context, Uri uri) {
+        try {
+            InputStream is = context.getContentResolver().openInputStream(uri);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            byte[] buffer = new byte[1024];
+            int len = 0;
+
+            while( (len = is.read(buffer) ) != -1 ) {
+                baos.write(buffer);
+            }
+
+            return baos.toByteArray();
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static Uri getOutputUri() {
         File dir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
