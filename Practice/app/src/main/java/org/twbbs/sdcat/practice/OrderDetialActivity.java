@@ -6,34 +6,43 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 public class OrderDetialActivity extends ActionBarActivity {
+
+    private TextView textView;
+    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detial);
 
+        textView = (TextView) findViewById(R.id.textView);
+        webView = (WebView) findViewById(R.id.webView);
+
         Intent intent = getIntent();
         String note = intent.getStringExtra("note");
         String address = intent.getStringExtra("address").split(" ◎ ")[1];
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String url = "https://maps.googleapis.com/maps/api/geocode/json?address=taipei101";
-                String result = Utils.fetchUrl(url);
-                Log.d("debug", result);
-            }
-        }).start();
-
 
         String sum = intent.getStringExtra("sum");
         String parseid = intent.getStringExtra("pid");
 
         //Toast.makeText(this, note + "," + address + "," + sum + "," + parseid + "," + result, Toast.LENGTH_LONG).show();
+        webView.loadUrl(Utils.getStaticMapUrl(address));
+
+        String url = Utils.getGeoQueryUrl(address);
+        Utils.NetworkTask networkTask = new Utils.NetworkTask();
+        networkTask.setCallback(new Utils.NetworkTask.Callback() {
+            @Override
+            public void done(String fetchResult) {
+                //textView.setText(fetchResult);
+            }
+        });
+        networkTask.execute(url);
     }
 
     @Override

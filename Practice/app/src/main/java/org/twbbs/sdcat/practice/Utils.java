@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,9 +16,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 
 /**
  * Created by chunwei on 2015/7/20.
@@ -108,6 +112,55 @@ public class Utils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    final static String GEO_URL = "https://maps.googleapis.com/maps/api/geocode/json?address=";
+    public static String getGeoQueryUrl(String address) {
+        try {
+            return GEO_URL + URLEncoder.encode(address, "utf-8");
+        }catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    final static String STATIC_MAP_URL =
+            "http://maps.googleapis.com/maps/api/staticmap?center=%s&zoom=17&scale=1&size=300x300&maptype=roadmap&format=png&visual_refresh=true";
+    public static String getStaticMapUrl(String address) {
+        try {
+            String center = URLEncoder.encode(address, "utf-8");
+            return String.format(STATIC_MAP_URL, center);
+        }catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static class NetworkTask extends AsyncTask<String, Void, String>{
+
+        private Callback callback;
+
+        public void setCallback(Callback callback) {
+            this.callback = callback;
+        }
+
+        //doInBackground的參數型別跟AsyncTask的第一個參數相同
+        @Override
+        protected String doInBackground(String... params){
+            String url = params[0];
+            String fetchResult = Utils.fetchUrl(url);
+            Log.d("debug", fetchResult);
+            return fetchResult;
+        }
+
+        @Override
+        protected void onPostExecute(String fetchResult) {
+            callback.done(fetchResult);
+        }
+
+        interface Callback {
+            void done(String fetchResult);
+        }
     }
 
 }
