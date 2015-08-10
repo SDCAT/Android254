@@ -8,6 +8,9 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -159,6 +162,7 @@ public class Utils {
             String url = params[0];
             //String fetchResult = Utils.fetchUrl(url);
             byte[] fetchResult = Utils.fetchUrlToByte(url);
+
             //Log.d("debug", fetchResult);
             return fetchResult;
         }
@@ -173,4 +177,15 @@ public class Utils {
         }
     }
 
+    public static double[] getGeoPoint(String jsonString) {
+        try {
+            JSONObject object = new JSONObject(jsonString);
+            JSONObject location = object.getJSONArray("result").getJSONObject(0).getJSONObject("geometry").getJSONObject("location");
+            return new double[]{location.getDouble("lat"), location.getDouble("lng") };
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return  null;
+    }
 }
