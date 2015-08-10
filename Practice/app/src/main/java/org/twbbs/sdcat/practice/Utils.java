@@ -106,7 +106,7 @@ public class Utils {
             InputStream is = urlConnection.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[4096];
             int len = 0;
 
             while( (len = is.read(buffer) ) != -1 ) {
@@ -147,6 +147,19 @@ public class Utils {
         }
         return null;
     }
+    final static String STATIC_MAP_PING_URL =
+            "http://maps.googleapis.com/maps/api/staticmap?center=[add]&zoom=16&scale=1&size=300x300&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:L%7C[lat],[lng]";
+    public static String getStaticMapUrl(String address, double[] location) {
+        try {
+            String center = URLEncoder.encode(address, "utf-8");
+            double lat = location[0];
+            double lng = location[1];
+            return STATIC_MAP_PING_URL.replace("[add]", center).replace("[lat]", String.valueOf(lat)).replace("[lng]",String.valueOf(lng));
+        }catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public static class NetworkTask extends AsyncTask<String, Void, byte[]>{
 
@@ -179,9 +192,16 @@ public class Utils {
 
     public static double[] getGeoPoint(String jsonString) {
         try {
+            Log.d("debug",jsonString);
             JSONObject object = new JSONObject(jsonString);
-            JSONObject location = object.getJSONArray("result").getJSONObject(0).getJSONObject("geometry").getJSONObject("location");
-            return new double[]{location.getDouble("lat"), location.getDouble("lng") };
+            JSONObject location = object.getJSONArray("results").getJSONObject(0)
+                    .getJSONObject("geometry")
+                    .getJSONObject("location");
+            Double lat = location.getDouble("lat");
+            Double lng = location.getDouble("lng");
+            Log.d("debug",String.valueOf(lat));
+            Log.d("debug",String.valueOf(lng));
+            return new double[]{lat,lng};
         }
         catch (JSONException e) {
             e.printStackTrace();

@@ -30,7 +30,7 @@ public class OrderDetialActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         String note = intent.getStringExtra("note");
-        String address = intent.getStringExtra("address").split(" ◎ ")[1];
+        final String address = intent.getStringExtra("address").split(" ◎ ")[1];
 
         String sum = intent.getStringExtra("sum");
         String parseid = intent.getStringExtra("pid");
@@ -44,6 +44,17 @@ public class OrderDetialActivity extends ActionBarActivity {
             @Override
             public void done(byte[] fetchResult) {
                 //textView.setText(new String(fetchResult));
+                String result = new String(fetchResult);
+                double[] location = Utils.getGeoPoint(result);
+                if(location != null) {
+                    String lat = String.valueOf(location[0]);
+                    String lng = String.valueOf(location[1]);
+                    textView.setText(lat + "," + lng);
+                }
+                else
+                {
+                    //textView.setText("NULL");
+                }
             }
         });
         networkTask.execute(url);
