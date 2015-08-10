@@ -145,7 +145,7 @@ public class Utils {
         return null;
     }
 
-    public static class NetworkTask extends AsyncTask<String, Void, String>{
+    public static class NetworkTask extends AsyncTask<String, Void, byte[]>{
 
         private Callback callback;
 
@@ -155,20 +155,21 @@ public class Utils {
 
         //doInBackground的參數型別跟AsyncTask的第一個參數相同
         @Override
-        protected String doInBackground(String... params){
+        protected byte[] doInBackground(String... params){
             String url = params[0];
-            String fetchResult = Utils.fetchUrl(url);
-            Log.d("debug", fetchResult);
+            //String fetchResult = Utils.fetchUrl(url);
+            byte[] fetchResult = Utils.fetchUrlToByte(url);
+            //Log.d("debug", fetchResult);
             return fetchResult;
         }
 
         @Override
-        protected void onPostExecute(String fetchResult) {
+        protected void onPostExecute(byte[] fetchResult) {
             callback.done(fetchResult);
         }
 
         interface Callback {
-            void done(String fetchResult);
+            void done(byte[] fetchResult);
         }
     }
 

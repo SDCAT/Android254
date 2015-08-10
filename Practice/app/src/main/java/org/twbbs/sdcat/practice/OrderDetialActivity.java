@@ -1,6 +1,7 @@
 package org.twbbs.sdcat.practice;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,17 +36,29 @@ public class OrderDetialActivity extends ActionBarActivity {
         String parseid = intent.getStringExtra("pid");
 
         //Toast.makeText(this, note + "," + address + "," + sum + "," + parseid + "," + result, Toast.LENGTH_LONG).show();
-        webView.loadUrl(Utils.getStaticMapUrl(address));
+        //webView.loadUrl(Utils.getStaticMapUrl(address));
 
         String url = Utils.getGeoQueryUrl(address);
         Utils.NetworkTask networkTask = new Utils.NetworkTask();
         networkTask.setCallback(new Utils.NetworkTask.Callback() {
             @Override
-            public void done(String fetchResult) {
-                //textView.setText(fetchResult);
+            public void done(byte[] fetchResult) {
+                //textView.setText(new String(fetchResult));
             }
         });
         networkTask.execute(url);
+
+        String staticMapUrl = Utils.getStaticMapUrl(address);
+        Log.d("debug", staticMapUrl);
+        Utils.NetworkTask getStaticMapTask = new Utils.NetworkTask();
+        getStaticMapTask.setCallback(new Utils.NetworkTask.Callback() {
+            @Override
+            public void done(byte[] fetchResult) {
+                Bitmap bm = Utils.byteToBitmap(fetchResult);
+                imageView.setImageBitmap(bm);
+            }
+        });
+        getStaticMapTask.execute(staticMapUrl);
     }
 
     @Override
