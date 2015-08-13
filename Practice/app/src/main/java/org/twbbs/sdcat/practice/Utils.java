@@ -8,6 +8,8 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import com.parse.codec.Encoder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -106,11 +108,12 @@ public class Utils {
             InputStream is = urlConnection.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[1024];
             int len = 0;
 
             while( (len = is.read(buffer) ) != -1 ) {
-                baos.write(buffer);
+                //baos.write(buffer);
+                baos.write(buffer, 0 , len);
             }
             return baos.toByteArray();
 
@@ -192,15 +195,15 @@ public class Utils {
 
     public static double[] getGeoPoint(String jsonString) {
         try {
+            Log.d("debug","**************************************************");
             Log.d("debug",jsonString);
+            Log.d("debug","**************************************************");
             JSONObject object = new JSONObject(jsonString);
             JSONObject location = object.getJSONArray("results").getJSONObject(0)
                     .getJSONObject("geometry")
                     .getJSONObject("location");
             Double lat = location.getDouble("lat");
             Double lng = location.getDouble("lng");
-            Log.d("debug",String.valueOf(lat));
-            Log.d("debug",String.valueOf(lng));
             return new double[]{lat,lng};
         }
         catch (JSONException e) {

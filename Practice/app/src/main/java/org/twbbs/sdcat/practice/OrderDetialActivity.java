@@ -12,12 +12,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class OrderDetialActivity extends ActionBarActivity {
+
+public class OrderDetialActivity extends ActionBarActivity implements OnMapReadyCallback {
 
     private TextView textView;
     private WebView webView;
     private ImageView imageView;
+
+    private double[] location;
+    private GoogleMap googleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +40,7 @@ public class OrderDetialActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         String note = intent.getStringExtra("note");
-        final String address = intent.getStringExtra("address").split(" ◎ ")[1];
+        String address = intent.getStringExtra("address").split(" ◎ ")[1];
 
         String sum = intent.getStringExtra("sum");
         String parseid = intent.getStringExtra("pid");
@@ -45,15 +55,9 @@ public class OrderDetialActivity extends ActionBarActivity {
             public void done(byte[] fetchResult) {
                 //textView.setText(new String(fetchResult));
                 String result = new String(fetchResult);
-                double[] location = Utils.getGeoPoint(result);
-                if(location != null) {
-                    String lat = String.valueOf(location[0]);
-                    String lng = String.valueOf(location[1]);
-                    textView.setText(lat + "," + lng);
-                }
-                else
-                {
-                    //textView.setText("NULL");
+                location = Utils.getGeoPoint(result);
+                if(googleMap != null) {
+                    setUpGoogleMap();
                 }
             }
         });
@@ -70,6 +74,22 @@ public class OrderDetialActivity extends ActionBarActivity {
             }
         });
         getStaticMapTask.execute(staticMapUrl);
+
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(this);
+
+    }
+
+    private void setUpGoogleMap() {
+        String[] tmp = getIntent().getStringExtra("address").split(" ◎ ");
+        String title = tmp[0];
+        String address = tmp[1];
+        LatLng latLng = new LatLng(location[0],location[1]);
+        googleMap.setMyLocationEnabled(true);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        googleMap.addMarker(new MarkerOptions().position(latLng).title(title).snippet(address));
     }
 
     @Override
@@ -92,5 +112,14 @@ public class OrderDetialActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+
+        if(location != null) {
+            setUpGoogleMap();
+        }
     }
 }
