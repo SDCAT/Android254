@@ -28,7 +28,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -64,6 +72,7 @@ public class MainActivity extends ActionBarActivity {
     private Bitmap bitmap;
 
     private boolean hasPhoto = false;
+    private CallbackManager callbackManager;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,8 +131,44 @@ public class MainActivity extends ActionBarActivity {
         });
         hideCheckBox.setChecked(sp.getBoolean("checkbox", false));
 
+        setupFacebookLogin();
         loadHistory();
         loadStoreInfo();
+    }
+
+    private void setupFacebookLogin() {
+        final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("user_friends");
+        // If using in a fragment
+        // Other app specific specialization
+
+        callbackManager = CallbackManager.Factory.create();
+        // Callback registration
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                // App code
+                //Login後取得Token
+                AccessToken token = loginResult.getAccessToken();
+                //依據GraphPath API取得callback
+                GraphRequest.newGraphPathRequest(token, "/me", new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse graphResponse) {
+                        //JSON物件
+                    }
+                });
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
     }
 
     //onClick需為public , Arg需有View
@@ -342,6 +387,7 @@ public class MainActivity extends ActionBarActivity {
     //這邊先找 onActivityResult, 好取得Activity回傳資料
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case REQUEST_CODE_MENU_ACTIVITY: {
                 if(resultCode == RESULT_OK) {
