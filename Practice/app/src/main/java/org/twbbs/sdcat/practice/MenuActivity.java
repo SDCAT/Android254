@@ -63,6 +63,12 @@ public class MenuActivity extends ActionBarActivity {
         return jArray.toString();
     }
 
+    public void cancel(View view) {
+        Intent intent = new Intent();
+        setResult(RESULT_CANCELED, intent);
+        finish();
+    }
+
     public void done(View view) {
         Intent intent = new Intent();
         //TODO

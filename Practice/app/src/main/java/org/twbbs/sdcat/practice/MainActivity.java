@@ -171,6 +171,16 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
+    public void hideCheckClick(View view) {
+        ImageView imageView = (ImageView)findViewById(R.id.imageView);
+        if(hideCheckBox.isChecked()) {
+            imageView.setVisibility(View.INVISIBLE);
+        }
+        else {
+            imageView.setVisibility(View.VISIBLE);
+        }
+    }
+
     //onClick需為public , Arg需有View
     public void submit(View view){
         String text= editText.getText().toString();
