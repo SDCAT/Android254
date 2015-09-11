@@ -83,9 +83,13 @@ public class MainActivity extends ActionBarActivity {
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "yEbzCH4YgT2LyUAinwI3psNyxw21etL2BCqzZXOy", "oyJa4cS4p239eC1e19JbIG8AI17zSosSxrko2nlH");
+        //Parse.initialize(this, "6As46KZTL6DzHlA0YrdQcHxe2Kkb6Z7guxjqH86f", "77G3RUogihUrOHAsIFxOFsd1O98R79mPAxHWsBbo");
+
         //ParseObject testObject = new ParseObject("TestObject");
         //testObject.put("foo", "bar");
         //testObject.saveInBackground();
+
+        //hw4();
 
         sp = getSharedPreferences("settings", Context.MODE_PRIVATE);
         editor = sp.edit();
@@ -134,6 +138,18 @@ public class MainActivity extends ActionBarActivity {
         setupFacebookLogin();
         loadHistory();
         loadStoreInfo();
+    }
+
+    private void hw4() {
+        ParseObject pObject = new ParseObject("HomeworkParse");
+        pObject.put("sid", "馬君瑋");
+        pObject.put("email", "sdcatsilport@gmail.com");
+        pObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                Log.d("debfg", "Upload Complect");
+            }
+        });
     }
 
     private void setupFacebookLogin() {

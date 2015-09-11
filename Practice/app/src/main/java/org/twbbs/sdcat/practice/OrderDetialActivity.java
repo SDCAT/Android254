@@ -7,8 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +22,20 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class OrderDetialActivity extends ActionBarActivity implements OnMapReadyCallback {
@@ -25,6 +43,9 @@ public class OrderDetialActivity extends ActionBarActivity implements OnMapReady
     private TextView textView;
     private WebView webView;
     private ImageView imageView;
+    private ListView listView;
+
+    private List<ParseObject> menuQueryReslut;
 
     private double[] location;
     private GoogleMap googleMap;
@@ -33,12 +54,14 @@ public class OrderDetialActivity extends ActionBarActivity implements OnMapReady
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detial);
+        listView = (ListView) findViewById(R.id.listView_drink);
 
         textView = (TextView) findViewById(R.id.textView);
         webView = (WebView) findViewById(R.id.webView);
         imageView = (ImageView) findViewById(R.id.imageView);
 
-        Intent intent = getIntent();
+
+        final Intent intent = getIntent();
         String note = intent.getStringExtra("note");
         String address = intent.getStringExtra("address").split(" ◎ ")[1];
 
@@ -64,7 +87,7 @@ public class OrderDetialActivity extends ActionBarActivity implements OnMapReady
         networkTask.execute(url);
 
         String staticMapUrl = Utils.getStaticMapUrl(address);
-        Log.d("debug", staticMapUrl);
+        //Log.d("debug", staticMapUrl);
         Utils.NetworkTask getStaticMapTask = new Utils.NetworkTask();
         getStaticMapTask.setCallback(new Utils.NetworkTask.Callback() {
             @Override
@@ -79,6 +102,62 @@ public class OrderDetialActivity extends ActionBarActivity implements OnMapReady
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
+        loadDrinks(parseid);
+
+    }
+
+
+    private void loadDrinks(String parseid) {
+        textView.setText(parseid);
+        //final List<Map<String, String>> data = new ArrayList<>();
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Order");
+        query.whereEqualTo("objectId", parseid);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if(e == null){
+                    //textView.setText("search OK");
+                    List<Map<String, String>> data = new ArrayList<>();
+                    JSONArray drinks = parseObject.getJSONArray("menu");
+                    textView.setText(drinks.toString());
+
+                    try{
+                        int count = drinks.length();
+                        for(int i = 0; i < count; i ++){
+                            JSONObject drinkObj = drinks.getJSONObject(i);
+                            String drinkType = drinkObj.getString("name");
+                            String l = String.valueOf(drinkObj.getInt("l"));
+                            String m = String.valueOf(drinkObj.getInt("m"));
+                            String s = String.valueOf(drinkObj.getInt("s"));
+                            Log.d("debug",drinkObj.toString());
+
+                            Map<String, String> item = new HashMap<>();
+                            item.put("drinkType", drinkType);
+                            item.put("smallCount", s);
+                            item.put("mediumCount", m);
+                            item.put("largeCount", l);
+
+                            data.add(item);
+                        }
+                        setDataToListView(data);
+                    }
+                    catch (JSONException ee){
+                        Log.d("debug",ee.getMessage());
+                    }
+
+                }
+            }
+        });
+    }
+    private void setDataToListView(List<Map<String, String>> dataList) {
+        //form的key依序對應到to的id, 陣列數量會相等
+        String[] from = new String[]{"drinkType", "smallCount", "mediumCount", "largeCount"};
+        int[] to = new int[]{R.id.listview_item_drinkType, R.id.listview_item_smallCount,
+                R.id.listview_item_mediumCount, R.id.listview_item_largeCount};
+
+        SimpleAdapter adapter = new SimpleAdapter(this, dataList, R.layout.listview_menu, from, to);
+        listView.setAdapter(adapter);
 
     }
 

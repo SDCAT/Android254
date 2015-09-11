@@ -8,7 +8,7 @@
 
     <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
         android:layout_height="wrap_content" android:id="@+id/textView"
-        android:visibility="gone" />
+         />
 
     <WebView
         android:layout_width="match_parent"
@@ -33,7 +33,15 @@
         android:layout_height="wrap_content"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/map"
-        android:layout_below="@+id/imageView"
+        android:layout_below="@+id/listView_drink"
         android:layout_centerHorizontal="true" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:id="@+id/listView_drink"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

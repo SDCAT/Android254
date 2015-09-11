@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="drinkType"
+        android:id="@+id/listview_item_drinkType"
+        android:layout_marginLeft="22dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="23dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Count"
+        android:id="@+id/listview_item_smallCount"
+        android:layout_below="@+id/listview_item_drinkType"
+        android:layout_alignLeft="@+id/listview_item_drinkType" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Count"
+        android:id="@+id/listview_item_mediumCount"
+        android:layout_alignTop="@+id/listview_item_smallCount"
+        android:layout_toRightOf="@+id/listview_item_drinkType"
+        android:layout_toEndOf="@+id/listview_item_drinkType"
+        android:layout_marginLeft="26dp"
+        android:layout_marginStart="26dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Count"
+        android:id="@+id/listview_item_largeCount"
+        android:layout_alignTop="@+id/listview_item_mediumCount"
+        android:layout_toRightOf="@+id/listview_item_mediumCount"
+        android:layout_toEndOf="@+id/listview_item_mediumCount"
+        android:layout_marginLeft="62dp"
+        android:layout_marginStart="62dp" />
+</RelativeLayout>
